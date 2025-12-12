@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  node-app:
+    build: ./node-app
+    container_name: node-app
+    ports:
+      - "8080:8080"
+    logging:
+      driver: "json-file"
+
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    depends_on:
+      - node-app
+      - node-exporter
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  node-exporter:
+    image: prom/node-exporter:1.6.1
+    container_name: node-exporter
+    pid: "host"
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:

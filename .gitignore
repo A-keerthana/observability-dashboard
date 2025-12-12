@@ -1,0 +1,14 @@
+# Node
+node_modules/
+npm-debug.log
+.DS_Store
+
+# Docker/Grafana/Elasticsearch storage
+grafana-storage/
+esdata/
+
+# Environment files
+.env
+
+# VS Code
+.vscode/

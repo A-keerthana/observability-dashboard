@@ -1,0 +1,18 @@
+groups:
+  - name: example-alerts
+    rules:
+      - alert: HighInstanceCPU
+        expr: node_cpu_seconds_total{mode!="idle"} > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU (example) on instance"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage (example)"
